@@ -1,4 +1,4 @@
-# DESTRUCTIVE
+"""DESTRUCTIVE"""
 # Clear data/processed
 # Use when redoing preprocessing 
 

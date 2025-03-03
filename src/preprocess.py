@@ -14,7 +14,7 @@ import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 import tensorflow as tf
-from utils import data_loader
+from utils import raw_data_loader
 
 # Define paths
 RAW_DATA_DIR = "../data/raw"
@@ -40,11 +40,11 @@ def preprocess_and_save():
     print("Starting preprocessing...")
 
     # Load training dataset (automatically splits into training & validation)
-    train_dataset = data_loader.load_data(TRAIN_DIR, validation=False)
-    val_dataset = data_loader.load_data(TRAIN_DIR, validation=True)
+    train_dataset = raw_data_loader.load_raw_data(TRAIN_DIR, validation=False)
+    val_dataset = raw_data_loader.load_raw_data(TRAIN_DIR, validation=True)
 
     # Load test dataset (no augmentation, just resizing and grayscale conversion)
-    test_dataset = data_loader.load_data(TEST_DIR, validation=False)
+    test_dataset = raw_data_loader.load_raw_data(TEST_DIR, validation=False)
 
     print("\n" * 15)
     # Print the structure of the train dataset (element_spec describes the data type and shape of the dataset)

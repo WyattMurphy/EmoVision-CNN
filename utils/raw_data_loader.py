@@ -14,17 +14,18 @@ from tensorflow.keras.preprocessing import image_dataset_from_directory
 IMG_SIZE = (48, 48)  # Standard FER-2013 image size
 BATCH_SIZE = 64
 VALIDATION_SPLIT = 0.2  # 20% of training data will be used for validation
+SEED = 42
 
-def load_data(data_dir, validation=False):
+def load_raw_data(data_dir, validation=False):
     """
-    Loads and preprocesses image data while ensuring raw data remains untouched.
-
+    Loads raw image data from the raw directory and applies basic resizing.
+    
     Args:
-        - data_dir (str): Path to the dataset directory.
-        - validation (bool): Whether to return the validation split.
-
+        data_dir (str): Path to the raw dataset directory ("raw/train" or "raw/test").
+        validation (bool): If True, loads the validation split from training data.
+    
     Returns:
-        - A `tf.data.Dataset` object.
+        tf.data.Dataset: A TensorFlow dataset object.
     """
     # Check if we are dealing with training data
     is_train_data = "train" in data_dir
@@ -32,7 +33,7 @@ def load_data(data_dir, validation=False):
     # Set shuffle and seed based on whether it's training data
     shuffle = is_train_data  # Shuffle only if it's training data
 
-    if "train" in data_dir and validation:
+    if is_train_data and validation:
         print(f"Loading validation data from {data_dir} (split from training set)...")
         dataset = image_dataset_from_directory(
             data_dir,
@@ -42,7 +43,7 @@ def load_data(data_dir, validation=False):
             color_mode="grayscale", # Convert to grayscale 
             validation_split=VALIDATION_SPLIT,  # Create validation split dynamically
             subset="validation",
-            seed=42,  # Ensure reproducibility
+            seed=SEED,  # Ensure reproducibility
         )
     else:
         
@@ -53,10 +54,10 @@ def load_data(data_dir, validation=False):
             batch_size=BATCH_SIZE,
             label_mode="categorical",
             color_mode="grayscale",
-            validation_split=VALIDATION_SPLIT if "train" in data_dir else None, # If data is training ensure validation split 
-            subset="training" if "train" in data_dir else None, # If training handle training portion of split
+            validation_split=VALIDATION_SPLIT if is_train_data else None, # If data is training ensure validation split 
+            subset="training" if is_train_data else None, # If training handle training portion of split
             shuffle=shuffle, # shuffle if training data
-            seed=42 if "train" in data_dir else None # Ensure consistent splitting only for training data
+            seed=SEED if is_train_data else None # Ensure consistent splitting only for training data
         )
 
     return dataset
